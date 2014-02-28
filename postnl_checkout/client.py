@@ -40,9 +40,11 @@ class PostNLCheckoutClient(object):
         session = self._get_session(timeout)
 
         # Instantiate web service.
-        self.client = self._get_client(
+        self.suds_client = self._get_client(
             environment, session, username, password, cache
         )
+
+        self.service = self.suds_client.service
 
     @classmethod
     def _get_session(cls, timeout=None):
@@ -103,7 +105,7 @@ class PostNLCheckoutClient(object):
         self._add_webshop(kwargs)
 
         # Execute API call
-        result = self.client.service.PrepareOrder(**kwargs)
+        result = self.service.PrepareOrder(**kwargs)
 
         # Return the result
         return result
@@ -115,7 +117,7 @@ class PostNLCheckoutClient(object):
         self._add_webshop(kwargs)
 
         # Execute API call
-        result = self.client.service.ReadOrder(**kwargs)
+        result = self.service.ReadOrder(**kwargs)
 
         # Return the result
         return result
@@ -127,7 +129,7 @@ class PostNLCheckoutClient(object):
         self._add_webshop(kwargs)
 
         # Execute API call
-        result = self.client.service.ConfirmOrder(**kwargs)
+        result = self.service.ConfirmOrder(**kwargs)
 
         # Return the result
         return result
@@ -139,7 +141,7 @@ class PostNLCheckoutClient(object):
         self._add_webshop(kwargs)
 
         # Execute API call
-        result = self.client.service.UpdateOrder(**kwargs)
+        result = self.service.UpdateOrder(**kwargs)
 
         # Return the result
         return result
@@ -151,7 +153,7 @@ class PostNLCheckoutClient(object):
         Returns True if service OK, False for not OK.
         """
 
-        result = self.webservice.PingStatus()
+        result = self.service.PingStatus()
 
         assert result in ('OK', 'NOK')
 
