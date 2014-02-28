@@ -1,0 +1,8 @@
+-r requirements.txt
+django-nose
+coverage
+python-coveralls
+django-dynamic-fixture
+webtest
+django-webtest
+yanc
