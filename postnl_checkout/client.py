@@ -19,12 +19,12 @@ class PostNLCheckoutClient(object):
 
     SANDBOX_ENDPOINT_URL = (
         'https://testservice.postnl.com/CIF_SB/'
-        'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc'
+        'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc?wsdl'
     )
 
     PRODUCTION_ENDPOINT_URL = (
         'https://service.postnl.com/CIF/'
-        'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc'
+        'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc?wsdl'
     )
 
     def __init__(
@@ -40,7 +40,7 @@ class PostNLCheckoutClient(object):
         session = self._get_session(timeout)
 
         # Instantiate web service.
-        self.webservice = self._get_webservice(
+        self.client = self._get_client(
             environment, session, username, password, cache
         )
 
@@ -56,7 +56,7 @@ class PostNLCheckoutClient(object):
         return session
 
     @classmethod
-    def _get_webservice(
+    def _get_client(
         cls, environment, session, username, password, cache=None
     ):
         """ Return webservice from SOAP client (suds). """
@@ -81,4 +81,78 @@ class PostNLCheckoutClient(object):
             wsse=security
         )
 
-        return client.service
+        return client
+
+    def _add_webshop(self, kwargs):
+        """ Add webshop to argument dictionary. """
+
+        # Note: we might require something like this:
+        # webshop = client.factory.create('ReadOrderWebshop')
+        # webshop.IntRef = self.webshop_id
+        # HOWEVER: there are different complex types for all calls
+
+        assert 'Webshop' not in kwargs
+        kwargs['Webshop'] = {
+            'IntRef': self.webshop_id
+        }
+
+    def prepare_order(self, **kwargs):
+        """ Wrapper around PrepareOrder API call. """
+
+        # Add webshop before executing request
+        self._add_webshop(kwargs)
+
+        # Execute API call
+        result = self.client.service.PrepareOrder(**kwargs)
+
+        # Return the result
+        return result
+
+    def read_order(self, **kwargs):
+        """ Wrapper around ReadOrder API call. """
+
+        # Add webshop before executing request
+        self._add_webshop(kwargs)
+
+        # Execute API call
+        result = self.client.service.ReadOrder(**kwargs)
+
+        # Return the result
+        return result
+
+    def confirm_order(self, **kwargs):
+        """ Wrapper around ConfirmOrder API call. """
+
+        # Add webshop before executing request
+        self._add_webshop(kwargs)
+
+        # Execute API call
+        result = self.client.service.ConfirmOrder(**kwargs)
+
+        # Return the result
+        return result
+
+    def update_order(self, **kwargs):
+        """ Wrapper around UpdateOrder API call. """
+
+        # Add webshop before executing request
+        self._add_webshop(kwargs)
+
+        # Execute API call
+        result = self.client.service.UpdateOrder(**kwargs)
+
+        # Return the result
+        return result
+
+    def ping_status(self, **kwargs):
+        """
+        Wrapper around PingStatus API call.
+
+        Returns True if service OK, False for not OK.
+        """
+
+        result = self.webservice.PingStatus()
+
+        assert result in ('OK', 'NOK')
+
+        return result == 'OK'
