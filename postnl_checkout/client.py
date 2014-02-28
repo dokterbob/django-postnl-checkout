@@ -73,7 +73,7 @@ class PostNLCheckoutClient(object):
 
         # Setup authentication
         security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken('username', 'password')
+        token = suds.wsse.UsernameToken(username, password)
         security.tokens.append(token)
 
         client = suds.client.Client(

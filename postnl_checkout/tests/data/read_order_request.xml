@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tpp="http://schemas.datacontract.org/2004/07/Tpp.Cif.Services.Domain.WebshopCheckoutWebService" xmlns:web="http://postnl.nl/cif/services/WebshopCheckoutWebService/">
+    <soapenv:Header>
+        <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <wsse:UsernameToken>
+                <wsse:Username>klant1</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-prof ile-1.0#PasswordText">xx</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <web:ReadOrder>
+            <tpp:Checkout>
+                <tpp:OrderToken>0cfb4be2-47cf-4eac-865c-d66657953d5c</tpp:OrderToken>
+            </tpp:Checkout>
+            <tpp:Webshop>
+                <tpp:IntRef>a0713e4083a049a996c302f48bb3f535</tpp:IntRef>
+            </tpp:Webshop>
+        </web:ReadOrder>
+    </soapenv:Body>
+</soapenv:Envelope>
