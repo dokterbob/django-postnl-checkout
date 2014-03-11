@@ -107,7 +107,7 @@
                 </tpp:Bezorging>
             </tpp:Voorkeuren>
             <tpp:Webshop>
-                <tpp:IntRef>a0713e4083a049a996c302f48bb3f535 </tpp:IntRef>
+                <tpp:IntRef>a0713e4083a049a996c302f48bb3f535</tpp:IntRef>
             </tpp:Webshop>
         </web:ReadOrderResponse>
     </soapenv:Body>

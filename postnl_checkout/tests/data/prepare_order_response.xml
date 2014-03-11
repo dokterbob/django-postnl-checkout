@@ -7,7 +7,7 @@
                 <tpp:Url>http://tpppm-test.e-id.nl/Orders/OrderCheckout?token=0cfb4be2-47cf-4eac-865c-d66657953d5c</tpp:Url>
             </tpp:Checkout>
             <tpp:Webshop>
-                <tpp:IntRef>a0713e4083a049a996c302f48bb3f535 </tpp:IntRef>
+                <tpp:IntRef>a0713e4083a049a996c302f48bb3f535</tpp:IntRef>
             </tpp:Webshop>
         </web:PrepareOrderResponse>
     </soapenv:Body>

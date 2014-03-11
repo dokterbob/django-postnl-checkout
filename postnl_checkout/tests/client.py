@@ -9,6 +9,9 @@ from ..client import PostNLCheckoutClient
 
 
 class ClientTests(TestCase):
+    # IntRef used for testing
+    intref = 'a0713e4083a049a996c302f48bb3f535'
+
     def setUp(self):
         """ Instantiate client for tests. """
 
@@ -36,6 +39,13 @@ class ClientTests(TestCase):
                 webshop_id='a0713e4083a049a996c302f48bb3f535',
                 environment='sandbox'
             )
+
+    def assertWebshop(self, result):
+        """ Assert webshop and id in result. """
+
+        self.assertIn('Webshop', result)
+        self.assertIn('IntRef', result.Webshop)
+        self.assertEquals(result.Webshop.IntRef, self.intref)
 
     def read_file(self, filename):
         """ Read file from data directory and return contents. """
@@ -76,7 +86,7 @@ class ClientTests(TestCase):
         # Kwargs should be updated with IntRef
         self.assertEquals({
             'kaas': 'lekker',
-            'Webshop': {'IntRef': 'a0713e4083a049a996c302f48bb3f535'}
+            'Webshop': {'IntRef': self.intref}
         }, kwargs)
 
     def test_parse_datetime(self):
@@ -181,6 +191,17 @@ class ClientTests(TestCase):
         with HTTMock(response):
             result = self.client.prepare_order(**kwargs)
 
+        # Assert checkout
+        self.assertIn('Checkout', result)
+
+        checkout = result.Checkout
+        self.assertIn('OrderToken', checkout)
+        self.assertEquals(
+            checkout.OrderToken, '0cfb4be2-47cf-4eac-865c-d66657953d5c'
+        )
+
+        self.assertWebshop(result)
+
     def test_read_order(self):
         """ Test ReadOrder """
 
@@ -210,7 +231,8 @@ class ClientTests(TestCase):
         self.assertIn('Opties', result)
         self.assertIn('Order', result)
         self.assertIn('Voorkeuren', result)
-        self.assertIn('Webshop', result)
+
+        self.assertWebshop(result)
 
         # Dive into voorkeuren
         voorkeuren = result['Voorkeuren']
