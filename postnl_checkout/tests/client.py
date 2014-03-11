@@ -108,10 +108,14 @@ class ClientTests(TestCase):
         """ ping_status returns True or False """
 
         def ok_response(url, request):
-            return self.read_file('status_ok_response.xml')
+            self.assertXMLEqual(
+                request.body,
+                self.read_file('ping_status_request.xml')
+            )
+            return self.read_file('ping_status_response_ok.xml')
 
         def nok_response(url, request):
-            return self.read_file('status_nok_response.xml')
+            return self.read_file('ping_status_response_nok.xml')
 
         with HTTMock(ok_response):
             self.assertEquals(self.client.ping_status(), True)
