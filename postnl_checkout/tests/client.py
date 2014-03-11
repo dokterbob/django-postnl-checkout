@@ -79,6 +79,18 @@ class ClientTests(TestCase):
             'Webshop': {'IntRef': 'a0713e4083a049a996c302f48bb3f535'}
         }, kwargs)
 
+    def test_parse_datetime(self):
+        """ TEst parsing datetimes """
+        output = self.client.parse_datetime('15-06-1977 00:00:00')
+
+        self.assertEquals(
+            output,
+            datetime.datetime(
+                year=1977, month=6, day=15,
+                hour=0, minute=0, second=0
+            )
+        )
+
     def test_prepare_order(self):
         raise NotImplementedError()
 

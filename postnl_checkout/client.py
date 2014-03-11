@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import hashlib
+import datetime
 
 import requests
 
@@ -90,6 +91,14 @@ class PostNLCheckoutClient(object):
         )
 
         return client
+
+    @classmethod
+    def parse_datetime(cls, value):
+        """ Parse datetime in PostNL format. """
+
+        datetime_format = '%d-%m-%Y %H:%M:%S'
+
+        return datetime.datetime.strptime(value, datetime_format)
 
     def _add_webshop(self, kwargs):
         """ Add webshop to argument dictionary. """
