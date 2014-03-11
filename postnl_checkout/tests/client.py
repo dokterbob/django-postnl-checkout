@@ -91,6 +91,20 @@ class ClientTests(TestCase):
             )
         )
 
+    def test_format_datetime(self):
+        """ TEst parsing datetimes """
+        output = self.client.format_datetime(
+            datetime.datetime(
+                year=1977, month=6, day=15,
+                hour=0, minute=0, second=0
+            )
+        )
+
+        self.assertEquals(
+            output,
+            '15-06-1977 00:00:00'
+        )
+
     def test_prepare_order(self):
         raise NotImplementedError()
 

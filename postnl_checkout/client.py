@@ -30,6 +30,8 @@ class PostNLCheckoutClient(object):
         'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc?wsdl'
     )
 
+    datetime_format = '%d-%m-%Y %H:%M:%S'
+
     def __init__(
         self, username, password, webshop_id, environment,
         timeout=None, cache=None
@@ -96,9 +98,20 @@ class PostNLCheckoutClient(object):
     def parse_datetime(cls, value):
         """ Parse datetime in PostNL format. """
 
-        datetime_format = '%d-%m-%Y %H:%M:%S'
+        return datetime.datetime.strptime(value, cls.datetime_format)
 
-        return datetime.datetime.strptime(value, datetime_format)
+    @classmethod
+    def format_datetime(cls, value):
+        """ Format datetime in PostNL format. """
+
+        return datetime.datetime.strftime(value, cls.datetime_format)
+
+    @classmethod
+    def _assert_required_attributes(cls, kwargs, required):
+        """ Assert whether all required attributes are present. """
+
+        for key in required:
+            assert key in kwargs, 'Required argument %s not present.' % key
 
     def _add_webshop(self, kwargs):
         """ Add webshop to argument dictionary. """
@@ -119,6 +132,11 @@ class PostNLCheckoutClient(object):
         # Add webshop before executing request
         self._add_webshop(kwargs)
 
+        if __debug__:
+            self._assert_required_attributes(
+                kwargs, ('Webshop', 'Order')
+            )
+
         # Execute API call
         result = self.service.PrepareOrder(**kwargs)
 
@@ -130,6 +148,11 @@ class PostNLCheckoutClient(object):
 
         # Add webshop before executing request
         self._add_webshop(kwargs)
+
+        if __debug__:
+            self._assert_required_attributes(
+                kwargs, ('Webshop', 'Checkout')
+            )
 
         # Execute API call
         result = self.service.ReadOrder(**kwargs)
