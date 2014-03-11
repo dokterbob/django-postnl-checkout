@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import hashlib
+
 import requests
 
 import suds.client
@@ -72,10 +74,14 @@ class PostNLCheckoutClient(object):
             webservice_url = cls.SANDBOX_ENDPOINT_URL
 
         # Setup authentication
+        sha1 = hashlib.sha1()
+        sha1.update(password)
+
         security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken(username, password)
+        token = suds.wsse.UsernameToken(username, sha1.hexdigest())
         security.tokens.append(token)
 
+        # Instantiate client
         client = suds.client.Client(
             webservice_url,
             transport=suds_requests.RequestsTransport(session),
