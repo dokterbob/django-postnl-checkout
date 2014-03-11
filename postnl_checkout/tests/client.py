@@ -11,12 +11,28 @@ class ClientTests(TestCase):
     def setUp(self):
         """ Instantiate client for tests. """
 
-        self.client = PostNLCheckoutClient(
-            username='klant1',
-            password='xx',
-            webshop_id='a0713e4083a049a996c302f48bb3f535',
-            environment='sandbox'
-        )
+        def response(url, request):
+            if '.xsd' in url.path:
+                # Request of XSD file from WSDL
+                filename = url.path.rsplit('/', 1)[1]
+
+                return self.read_file('wsdl/' + filename)
+
+            # Request for WSDL file
+            self.assertEquals(
+                url.geturl(),
+                PostNLCheckoutClient.SANDBOX_ENDPOINT_URL
+            )
+
+            return self.read_file('wsdl/WebshopCheckoutWebService_1.wsdl')
+
+        with HTTMock(response):
+            self.client = PostNLCheckoutClient(
+                username='klant1',
+                password='xx',
+                webshop_id='a0713e4083a049a996c302f48bb3f535',
+                environment='sandbox'
+            )
 
     def read_file(self, filename):
         """ Read file from data directory and return contents. """
