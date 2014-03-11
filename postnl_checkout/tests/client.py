@@ -106,10 +106,80 @@ class ClientTests(TestCase):
         )
 
     def test_prepare_order(self):
-        raise NotImplementedError()
+        """ Test PrepareOrder """
+
+        def response(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('prepare_order_request.xml')
+            )
+
+            return self.read_file('prepare_order_response.xml')
+
+        kwargs = {
+            'AangebodenBetaalMethoden': {
+                'PrepareOrderBetaalMethode': {
+                    'Code': 'IDEAL',
+                    'Prijs': '5.00'
+                }
+            },
+            'AangebodenCommunicatieOpties': {
+                'PrepareOrderCommunicatieOptie': {
+                    'Code': 'NEWS'
+                }
+            },
+            'AangebodenOpties': {
+                'PrepareOrderOptie': {
+                    'Code': 'WRAP',
+                    'Prijs': '2.50'
+                }
+            },
+            'AfleverOpties': {
+                'AfleverOptie': {
+                    'Code': 'PG',
+                    'Kosten': '0.00',
+                    'Toegestaan': True
+                }
+            },
+            'Consument': {
+                'ExtRef': 'test@e-id.nl'
+            },
+            'Contact': {
+                'Url': 'http://www.kadowereld.nl/url/contact'
+            },
+            'Order': {
+                'ExtRef': '1105_900',
+                'OrderDatum': self.client.format_datetime(
+                    datetime.datetime(
+                        year=2011, month=7, day=21,
+                        hour=20, minute=11, second=0
+                    )
+                ),
+                'Subtotaal': '125.00',
+                'VerzendDatum': self.client.format_datetime(
+                    datetime.datetime(
+                        year=2011, month=7, day=22,
+                        hour=20, minute=11, second=0
+                    )
+                ),
+                'VerzendKosten': '12.50'
+            },
+            'Retour': {
+                'BeschrijvingUrl': 'http://www.kadowereld.nl/url/beschrijving',
+                'PolicyUrl': 'http://www.kadowereld.nl/url/policy',
+                'RetourTermijn': 28,
+                'StartProcesUrl': 'http://www.kadowereld.nl/url/startproces'
+            },
+            'Service': {
+                'Url': 'http://www.kadowereld.nl/url/service'
+            }
+        }
+
+        # Execute API call
+        with HTTMock(response):
+            result = self.client.prepare_order(**kwargs)
 
     def test_read_order(self):
-        """ Test read_order """
+        """ Test ReadOrder """
 
         def response(url, request):
             self.assertXMLEqual(
