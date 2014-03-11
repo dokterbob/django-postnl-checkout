@@ -29,6 +29,8 @@ class ClientTests(TestCase):
         with HTTMock(response):
             self.client = PostNLCheckoutClient(
                 username='klant1',
+                # Note: sha1 hashed password:
+                # dd7b7b74ea160e049dd128478e074ce47254bde8
                 password='xx',
                 webshop_id='a0713e4083a049a996c302f48bb3f535',
                 environment='sandbox'
@@ -74,8 +76,7 @@ class ClientTests(TestCase):
     def test_read_order(self):
         """ Test read_order """
 
-        def mock_response(url, request):
-
+        def response(url, request):
             self.assertXMLEqual(
                 request.body, self.read_file('read_order_request.xml')
             )
@@ -89,10 +90,19 @@ class ClientTests(TestCase):
         }
 
         # Execute API call
-        with HTTMock(mock_response):
+        with HTTMock(response):
             result = self.client.read_order(**kwargs)
 
-        # Test result
+        # Assert presence of top level elements
+        self.assertIn('BetaalMethode', result)
+        self.assertIn('Bezorging', result)
+        self.assertIn('CommunicatieOpties', result)
+        self.assertIn('Consument', result)
+        self.assertIn('Facturatie', result)
+        self.assertIn('Opties', result)
+        self.assertIn('Order', result)
+        self.assertIn('Voorkeuren', result)
+        self.assertIn('Webshop', result)
 
     def test_confirm_order(self):
         """ Test confirm_order """
@@ -108,6 +118,7 @@ class ClientTests(TestCase):
         """ ping_status returns True or False """
 
         def ok_response(url, request):
+            # Assert
             self.assertXMLEqual(
                 request.body,
                 self.read_file('ping_status_request.xml')

@@ -50,7 +50,7 @@
                     <tpp:Voornaam/>
                     <tpp:Wijk/>
                 </tpp:ServicePunt>
-                <tpp:ProductType/>
+                <!-- Invalid field not in the XSD: <tpp:ProductType/> -->
             </tpp:Bezorging>
             <tpp:CommunicatieOpties>
                 <tpp:ReadOrderResponseCommunicatieOptie>
