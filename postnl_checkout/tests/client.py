@@ -127,19 +127,22 @@ class ClientTests(TestCase):
                     'Code': 'NEWS'
                 }
             },
-            'AangebodenOpties': {
-                'PrepareOrderOptie': {
-                    'Code': 'WRAP',
-                    'Prijs': '2.50'
-                }
-            },
-            'AfleverOpties': {
-                'AfleverOptie': {
-                    'Code': 'PG',
-                    'Kosten': '0.00',
-                    'Toegestaan': True
-                }
-            },
+            # FIXME: the following is not submitted by SUDS
+            # Most probably because it is not properly defined in the WSDL
+            # Contact PostNL about this.
+            # 'AangebodenOpties': {
+            #     'PrepareOrderOptie': {
+            #         'Code': 'WRAP',
+            #         'Prijs': '2.50'
+            #     }
+            # },
+            # 'AfleverOpties': {
+            #     'AfleverOptie': {
+            #         'Code': 'PG',
+            #         'Kosten': '0.00',
+            #         'Toegestaan': True
+            #     }
+            # },
             'Consument': {
                 'ExtRef': 'test@e-id.nl'
             },
@@ -221,6 +224,11 @@ class ClientTests(TestCase):
                 hour=0, minute=0, second=0
             )
         )
+
+        # FIXME: According to the specs, a ProductType field exists.
+        # However, this is not in the XSD and hence causes a validation error.
+        # For now, this has been removed from the mock response for now.
+        # Eventually, PostNL should be contacted about this.
 
     def test_confirm_order(self):
         """ Test confirm_order """
