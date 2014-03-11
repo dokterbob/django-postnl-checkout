@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from django.test import TestCase
 
@@ -66,11 +67,19 @@ class ClientTests(TestCase):
     def test_add_webshop(self):
         """ Test _add_webshop """
 
-        raise NotImplementedError()
+        kwargs = {
+            'kaas': 'lekker'
+        }
+
+        self.client._add_webshop(kwargs)
+
+        # Kwargs should be updated with IntRef
+        self.assertEquals({
+            'kaas': 'lekker',
+            'Webshop': {'IntRef': 'a0713e4083a049a996c302f48bb3f535'}
+        }, kwargs)
 
     def test_prepare_order(self):
-        """ Test prepare_order """
-
         raise NotImplementedError()
 
     def test_read_order(self):
@@ -103,6 +112,19 @@ class ClientTests(TestCase):
         self.assertIn('Order', result)
         self.assertIn('Voorkeuren', result)
         self.assertIn('Webshop', result)
+
+        # Dive into voorkeuren
+        voorkeuren = result['Voorkeuren']
+        self.assertIn('Bezorging', voorkeuren)
+
+        # Attempt parsing datetime
+        self.assertEquals(
+            self.client.parse_datetime(voorkeuren['Bezorging']['Datum']),
+            datetime.datetime(
+                year=2012, month=4, day=26,
+                hour=0, minute=0, second=0
+            )
+        )
 
     def test_confirm_order(self):
         """ Test confirm_order """
