@@ -116,11 +116,6 @@ class PostNLCheckoutClient(object):
     def _add_webshop(self, kwargs):
         """ Add webshop to argument dictionary. """
 
-        # Note: we might require something like this:
-        # webshop = client.factory.create('ReadOrderWebshop')
-        # webshop.IntRef = self.webshop_id
-        # HOWEVER: there are different complex types for all calls
-
         assert 'Webshop' not in kwargs
         kwargs['Webshop'] = {
             'IntRef': self.webshop_id
