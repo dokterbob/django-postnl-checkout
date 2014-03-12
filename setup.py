@@ -29,6 +29,11 @@ try:
 except:
     REQUIREMENTS = None
 
+try:
+    DJANGO_REQUIREMENTS = open('django_requirements.txt').read()
+except:
+    DJANGO_REQUIREMENTS = None
+
 setup(
     name='django-postnl-checkout',
     version='0.1',
@@ -36,7 +41,7 @@ setup(
     long_description=README,
     install_requires=REQUIREMENTS,
     extras_require = {
-        'Django': 'Django>=1.4.10,<1.7'
+        'Django': DJANGO_REQUIREMENTS
     },
     license='AGPL',
     author='Mathijs de Bruin',
