@@ -161,6 +161,11 @@ class PostNLCheckoutClient(object):
         # Add webshop before executing request
         self._add_webshop(kwargs)
 
+        if __debug__:
+            self._assert_required_attributes(
+                kwargs, ('Webshop', 'Checkout', 'Order')
+            )
+
         # Execute API call
         result = self.service.ConfirmOrder(**kwargs)
 

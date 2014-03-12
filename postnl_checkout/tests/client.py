@@ -255,7 +255,32 @@ class ClientTests(TestCase):
     def test_confirm_order(self):
         """ Test confirm_order """
 
-        raise NotImplementedError()
+        def response(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('confirm_order_request.xml')
+            )
+
+            return self.read_file('confirm_order_response.xml')
+
+        kwargs = {
+            'Checkout': {
+                'OrderToken': '0cfb4be2-47cf-4eac-865c-d66657953d5c'
+            },
+            'Order': {
+                'PaymentTotal': '183.25'
+            }
+        }
+
+        # Execute API call
+        with HTTMock(response):
+            result = self.client.confirm_order(**kwargs)
+
+        self.assertWebshop(result)
+
+        # Assert presence of top level elements
+        self.assertIn('Order', result)
+        order = result.Order
+        self.assertIn('ExtRef', order)
 
     def test_update_order(self):
         """ Test update_order """
