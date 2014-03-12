@@ -38,6 +38,18 @@ Requirements
 Please refer to `requirements.txt <http://github.com/dokterbob/django-postnl-checkout/blob/master/requirements.txt>`_
 for an updated list of required packages.
 
+Django
+======
+
+Settings
+********
+
+* `POSTNL_CHECKOUT_USERNAME`
+* `POSTNL_CHECKOUT_PASSWORD`
+* `POSTNL_CHECKOUT_WEBSHOP_ID`
+* `POSTNL_CHECKOUT_ENVIRONMENT`
+* `POSTNL_CHECKOUT_TIMEOUT`
+
 Tests
 ==========
 Tests for pull req's and the master branch are automatically run through
