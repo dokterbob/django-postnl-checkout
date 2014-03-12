@@ -285,7 +285,58 @@ class ClientTests(TestCase):
     def test_update_order(self):
         """ Test update_order """
 
-        raise NotImplementedError()
+        def response_success(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('update_order_request.xml')
+            )
+
+            return self.read_file('update_order_response_success.xml')
+
+        def response_fail(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('update_order_request.xml')
+            )
+
+            return self.read_file('update_order_response_fail.xml')
+
+        kwargs = {
+            'Checkout': {
+                'OrderToken': '0cfb4be2-47cf-4eac-865c-d66657953d5c'
+            },
+            'Order': {
+                'ExtRef': 'FDK004',
+                'Zending': {
+                    'UpdateOrderOrderZending': {
+                        'Busstuk': {
+                            'UpdateOrderOrderZendingBusstuk': {
+                                'Verzonden': '23-08-2011 12:00:00'
+                            }
+                        },
+                        'ExtRef': '642be996-6ab3-4a4c-b7d6-2417a4cee0df',
+                        'Pakket': {
+                            'UpdateOrderOrderZendingPakket': {
+                                'Barcode': '3s123456789',
+                                'Postcode': '4131LV'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        # Execute API call
+        with HTTMock(response_success):
+            result = self.client.update_order(**kwargs)
+
+        # Result should be True
+        self.assertTrue(result)
+
+        # Execute API call
+        with HTTMock(response_fail):
+            result = self.client.update_order(**kwargs)
+
+        # Result should be True
+        self.assertFalse(result)
 
     def test_ping_status(self):
         """ ping_status returns True or False """

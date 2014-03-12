@@ -178,11 +178,18 @@ class PostNLCheckoutClient(object):
         # Add webshop before executing request
         self._add_webshop(kwargs)
 
+        if __debug__:
+            self._assert_required_attributes(
+                kwargs, ('Webshop', 'Order')
+            )
+
         # Execute API call
         result = self.service.UpdateOrder(**kwargs)
 
         # Return the result
-        return result
+        assert result in ('true', 'false')
+
+        return result == 'true'
 
     def ping_status(self, **kwargs):
         """
