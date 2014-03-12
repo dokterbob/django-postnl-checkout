@@ -9,10 +9,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.auth',
     'django_nose',
-    'postnl_checkout'
+    'postnl_checkout.contrib.django'
 ]
-
-ROOT_URLCONF = 'postnl_checkout.urls'
 
 SITE_ID = 1
 

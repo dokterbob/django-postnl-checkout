@@ -35,6 +35,9 @@ setup(
     description='PostNL checkout support for Django.',
     long_description=README,
     install_requires=REQUIREMENTS,
+    extras_require = {
+        'Django': 'Django>=1.4.10,<1.7'
+    },
     license='AGPL',
     author='Mathijs de Bruin',
     author_email='mathijs@mathijsfietst.nl',

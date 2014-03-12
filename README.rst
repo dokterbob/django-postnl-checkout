@@ -18,7 +18,7 @@ django-postnl-checkout
 .. image:: https://pypip.in/d/django-postnl-checkout/badge.png
     :target: https://crate.io/packages/django-postnl-checkout?version=latest
 
-PostNL checkout support for Django.
+PostNL checkout support for Python and Django.
 -----------------------------------------------------
 
 What is it?
