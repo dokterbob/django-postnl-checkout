@@ -1,14 +1,15 @@
 import os
 import datetime
-
-from django.test import TestCase
+import unittest
 
 from httmock import HTTMock
 
 from ..client import PostNLCheckoutClient
 
+from .base import PostNLTestMixin
 
-class ClientTests(TestCase):
+
+class ClientTests(PostNLTestMixin, unittest.TestCase):
     # IntRef used for testing
     intref = 'a0713e4083a049a996c302f48bb3f535'
 
