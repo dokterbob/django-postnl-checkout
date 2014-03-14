@@ -83,3 +83,23 @@ class Order(models.Model):
 
         # Return updated instance
         return self
+
+    def confirm_order(self, **kwargs):
+        """ Call ConfirmOrder and confirm results. """
+
+        # Prepare arguments
+        assert not 'Checkout' in kwargs
+
+        kwargs['Checkout'] = {
+            'OrderToken': self.order_token
+        }
+
+        # Call API
+        response = postnl_client.confirm_order(**kwargs)
+
+        # Make sure the response is sensible
+        if not 'Order' in response and 'ExtRef' in response['Order']:
+            raise Exception('No order reference in response.')
+
+        if response['Order']['ExtRef'] != self.order_ext_ref:
+            raise Exception('Order reference does not correspond.')

@@ -267,3 +267,29 @@ class OrderTests(PostNLTestMixin, TestCase):
                 'Prijs': '0.00'
             }
         })
+
+    def test_confirm_order(self):
+        """ Test confirm_order """
+
+        def response(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('confirm_order_request.xml')
+            )
+
+            return self.read_file('confirm_order_response.xml')
+
+        kwargs = {
+            'Order': {
+                'PaymentTotal': '183.25'
+            }
+        }
+
+        instance = G(
+            Order,
+            order_token='0cfb4be2-47cf-4eac-865c-d66657953d5c',
+            order_ext_ref='1105_900'
+        )
+
+        # Execute API call
+        with HTTMock(response):
+            instance.confirm_order(**kwargs)
