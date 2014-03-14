@@ -25,6 +25,8 @@ class Order(models.Model):
 
     read_order_response = JSONField()
 
+    update_order_request = JSONField()
+
     @classmethod
     def prepare_order(cls, **kwargs):
         """ Call PrepareOrder and create Order using resulting token. """
@@ -103,3 +105,34 @@ class Order(models.Model):
 
         if response['Order']['ExtRef'] != self.order_ext_ref:
             raise Exception('Order reference does not correspond.')
+
+    def update_order(self, **kwargs):
+        """ Call UpdateOrder, store request and confirm results. """
+
+        # Prepare arguments
+        assert not 'Checkout' in kwargs
+
+        kwargs['Checkout'] = {
+            'OrderToken': self.order_token
+        }
+
+        # Call API
+        response = postnl_client.update_order(**kwargs)
+
+        assert response in (True, False)
+
+        if not response:
+            raise Exception('Could not update order.')
+
+        # Store request
+        self.update_order_request = kwargs
+        self.clean()
+        self.save()
+
+        # Return updated instance
+        return self
+
+    def ping_status(self):
+        """ Wrap PingStatus for ease of accesibility. """
+
+        return postnl_client.ping_status()

@@ -293,3 +293,110 @@ class OrderTests(PostNLTestMixin, TestCase):
         # Execute API call
         with HTTMock(response):
             instance.confirm_order(**kwargs)
+
+    def test_update_order(self):
+        """ Test update_order """
+
+        def response_success(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('update_order_request.xml')
+            )
+
+            return self.read_file('update_order_response_success.xml')
+
+        def response_fail(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('update_order_request.xml')
+            )
+
+            return self.read_file('update_order_response_fail.xml')
+
+        kwargs = {
+            'Order': {
+                'ExtRef': 'FDK004',
+                'Zending': {
+                    'UpdateOrderOrderZending': {
+                        'Busstuk': {
+                            'UpdateOrderOrderZendingBusstuk': {
+                                'Verzonden': '23-08-2011 12:00:00'
+                            }
+                        },
+                        'ExtRef': '642be996-6ab3-4a4c-b7d6-2417a4cee0df',
+                        'Pakket': {
+                            'UpdateOrderOrderZendingPakket': {
+                                'Barcode': '3s123456789',
+                                'Postcode': '4131LV'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        instance = G(
+            Order,
+            order_token='0cfb4be2-47cf-4eac-865c-d66657953d5c',
+            order_ext_ref='1105_900'
+        )
+
+        # Make call fail
+        with HTTMock(response_fail):
+            self.assertRaises(
+                Exception, lambda: instance.update_order(**kwargs)
+            )
+
+        # Make call pass
+        with HTTMock(response_success):
+            response = instance.update_order(**kwargs)
+
+        self.assertTrue(response)
+
+        # Make sure the requested stuff is saved
+        self.assertEquals(
+            instance.update_order_request, {
+                'Checkout': {
+                    'OrderToken': '0cfb4be2-47cf-4eac-865c-d66657953d5c'
+                },
+                'Order': {
+                    'ExtRef': 'FDK004',
+                    'Zending': {
+                        'UpdateOrderOrderZending': {
+                            'Busstuk': {
+                                'UpdateOrderOrderZendingBusstuk': {
+                                    'Verzonden': '23-08-2011 12:00:00'
+                                }
+                            },
+                            'ExtRef': '642be996-6ab3-4a4c-b7d6-2417a4cee0df',
+                            'Pakket': {
+                                'UpdateOrderOrderZendingPakket': {
+                                    'Barcode': '3s123456789',
+                                    'Postcode': '4131LV'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+    def test_ping_status(self):
+        """ Test ping_status """
+
+        instance = G(Order)
+
+        def ok_response(url, request):
+            # Assert
+            self.assertXMLEqual(
+                request.body,
+                self.read_file('ping_status_request.xml')
+            )
+            return self.read_file('ping_status_response_ok.xml')
+
+        def nok_response(url, request):
+            return self.read_file('ping_status_response_nok.xml')
+
+        with HTTMock(ok_response):
+            self.assertEquals(instance.ping_status(), True)
+
+        with HTTMock(nok_response):
+            self.assertEquals(instance.ping_status(), False)
