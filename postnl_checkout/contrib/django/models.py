@@ -2,6 +2,8 @@ from django.db import models
 
 from jsonfield import JSONField
 
+from postnl_checkout.exceptions import PostNLResponseException
+
 from .utils import get_client, sudsobject_to_dict
 
 # Instantiate a client
@@ -97,13 +99,10 @@ class Order(models.Model):
         }
 
         # Call API
-        response = postnl_client.confirm_order(**kwargs)
+        result = postnl_client.confirm_order(**kwargs)
 
-        # Make sure the response is sensible
-        if not 'Order' in response and 'ExtRef' in response['Order']:
-            raise Exception('No order reference in response.')
-
-        if response['Order']['ExtRef'] != self.order_ext_ref:
+        # Make sure the result is sensible
+        if result['Order']['ExtRef'] != self.order_ext_ref:
             raise Exception('Order reference does not correspond.')
 
     def update_order(self, **kwargs):
@@ -122,7 +121,7 @@ class Order(models.Model):
         assert response in (True, False)
 
         if not response:
-            raise Exception('Could not update order.')
+            raise PostNLResponseException('Could not update order.')
 
         # Store request
         self.update_order_request = kwargs

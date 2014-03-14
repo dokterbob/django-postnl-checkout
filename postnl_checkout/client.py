@@ -11,6 +11,8 @@ import suds.wsse
 
 import suds_requests
 
+from .exceptions import PostNLResponseException
+
 
 class PostNLCheckoutClient(object):
     """
@@ -168,6 +170,10 @@ class PostNLCheckoutClient(object):
 
         # Execute API call
         result = self.service.ConfirmOrder(**kwargs)
+
+        # Make sure the response is sensible
+        if not 'Order' in result and 'ExtRef' in result['Order']:
+            raise PostNLResponseException('No order reference in result.')
 
         # Return the result
         return result
