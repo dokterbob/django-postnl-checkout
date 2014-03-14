@@ -2,17 +2,17 @@ from django.db import models
 
 from jsonfield import JSONField
 
-from postnl_checkout.client import PostNLCheckoutClient
+from .utils import get_client, sudsobject_to_dict
 
-from .utils import SudsDjangoCache
-from .settings import postnl_checkout_settings as settings
+# Instantiate a client
+postnl_client = get_client()
 
 
 class Order(models.Model):
     """ Django model representing the result of the ReadOrder call. """
 
     # Primary identifier
-    order_token = models.CharField(max_length=255, primary=True)
+    order_token = models.CharField(max_length=255, primary_key=True)
 
     # Other indexe fields
     order_ext_ref = models.CharField(db_index=True, max_length=255)
@@ -26,45 +26,38 @@ class Order(models.Model):
     read_order_request = JSONField()
     read_order_response = JSONField()
 
-    def __init__(self, *args, **kwargs):
-        """ Make a client available. """
-        super(Order, self).__init__(self, *args, **kwargs)
-
-        suds_cache = SudsDjangoCache()
-
-        self.client = PostNLCheckoutClient(
-            username=settings.USERNAME,
-            password=settings.PASSWORD,
-            webshop_id=settings.WEBSHOP_ID,
-            environment=settings.ENVIRONMENT,
-            timouet=settings.TIMEOUT,
-            cache=suds_cache
-        )
-
     @classmethod
-    def prepare_order(cls, params):
+    def prepare_order(cls, **kwargs):
         """ Call PrepareOrder and create Order using resulting token. """
 
         # Assert required attributes
-        assert 'Order' in params
+        assert 'Order' in kwargs
 
-        order_data = params['Order']
+        order_data = kwargs['Order']
 
         assert 'ExtRef' in order_data
         assert 'OrderDatum' in order_data
         assert 'VerzendDatum' in order_data
 
         # Prepare order
-        response = self.client.prepare_order(params)
+        response = postnl_client.prepare_order(**kwargs)
+        response_dict = sudsobject_to_dict(response)
+
+        assert 'Checkout' in response_dict
+        assert 'OrderToken' in response_dict['Checkout']
+        order_token = response_dict['Checkout']['OrderToken']
 
         # Store data
         order = cls(
+            order_token=order_token,
             order_ext_ref=order_data['ExtRef'],
-            order_date=order_data['OrderDatum']
-            prepare_order_request=params,
-            prepare_order_response=response
+            order_date=postnl_client.parse_datetime(order_data['OrderDatum']),
+            prepare_order_request=kwargs,
+            prepare_order_response=response_dict
         )
 
         # Validate and save
         order.clean()
         order.save()
+
+        return order

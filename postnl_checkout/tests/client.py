@@ -1,4 +1,3 @@
-import os
 import datetime
 import unittest
 
@@ -47,17 +46,6 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
         self.assertIn('Webshop', result)
         self.assertIn('IntRef', result.Webshop)
         self.assertEquals(result.Webshop.IntRef, self.intref)
-
-    def read_file(self, filename):
-        """ Read file from data directory and return contents. """
-
-        assert filename
-
-        data_directory = os.path.join(os.path.dirname(__file__), 'data')
-
-        f = open(os.path.join(data_directory, filename))
-
-        return f.read()
 
     def test_client(self):
         """ Test instantiated client """

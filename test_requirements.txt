@@ -4,3 +4,4 @@ coverage
 python-coveralls
 httmock
 yanc
+django-dynamic-fixture

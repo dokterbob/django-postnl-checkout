@@ -1,3 +1,7 @@
+import os
+
+from unittest.util import safe_repr
+
 from .utils import compare_xml
 
 
@@ -17,5 +21,18 @@ class PostNLTestMixin(object):
             self.fail(self._formatMessage(msg, standardMsg))
         else:
             if not result:
-                standardMsg = '%s != %s' % (safe_repr(xml1, True), safe_repr(xml2, True))
+                standardMsg = '%s != %s' % (
+                    safe_repr(xml1, True), safe_repr(xml2, True)
+                )
                 self.fail(self._formatMessage(msg, standardMsg))
+
+    def read_file(self, filename):
+        """ Read file from data directory and return contents. """
+
+        assert filename
+
+        data_directory = os.path.join(os.path.dirname(__file__), 'data')
+
+        f = open(os.path.join(data_directory, filename))
+
+        return f.read()

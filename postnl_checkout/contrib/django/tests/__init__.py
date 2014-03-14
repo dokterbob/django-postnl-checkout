@@ -1,1 +1,1 @@
-from .models import ModelTests
+from .models import OrderTests

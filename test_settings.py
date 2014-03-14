@@ -36,3 +36,8 @@ NOSE_ARGS = [
 
 # Required for django-webtest to work
 STATIC_URL = '/static/'
+
+# PostNL specific settings
+POSTNL_CHECKOUT_USERNAME = 'klant1'
+POSTNL_CHECKOUT_PASSWORD = 'xx'
+POSTNL_CHECKOUT_WEBSHOP_ID = 'a0713e4083a049a996c302f48bb3f535'

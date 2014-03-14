@@ -4,6 +4,8 @@ from django.core.cache import cache
 
 from suds.cache import Cache
 
+from postnl_checkout.client import PostNLCheckoutClient
+
 
 class Singleton(type):
     """
@@ -107,3 +109,34 @@ class SudsDjangoCache(Cache):
     def purge(self, id):
         cache.delete(self._cache_key(id))
 
+
+def get_client():
+    """ Instantiate and return PostNLCheckoutClient for use with Django. """
+
+    from .settings import postnl_checkout_settings
+
+    suds_cache = SudsDjangoCache()
+
+    client = PostNLCheckoutClient(
+        username=postnl_checkout_settings.USERNAME,
+        password=postnl_checkout_settings.PASSWORD,
+        webshop_id=postnl_checkout_settings.WEBSHOP_ID,
+        environment=postnl_checkout_settings.ENVIRONMENT,
+        timeout=postnl_checkout_settings.TIMEOUT,
+        cache=suds_cache
+    )
+
+    return client
+
+
+def sudsobject_to_dict(obj):
+    """ Recursively convert a suds object to a dictionary. """
+
+    result = {}
+    for (key, value) in obj:
+        if isinstance(value, basestring):
+            result[key] = value
+        else:
+            result[key] = sudsobject_to_dict(value)
+
+    return result
