@@ -35,7 +35,7 @@ except:
     DJANGO_REQUIREMENTS = None
 
 setup(
-    name='django-postnl-checkout',
+    name='python-postnl-checkout',
     version='0.1',
     description='PostNL checkout support for Django.',
     long_description=README,
@@ -46,7 +46,7 @@ setup(
     license='AGPL',
     author='Mathijs de Bruin',
     author_email='mathijs@mathijsfietst.nl',
-    url='https://github.com/dokterbob/django-postnl-checkout/',
+    url='https://github.com/dokterbob/python-postnl-checkout/',
     packages=find_packages(),
     include_package_data=True,
     classifiers=(
