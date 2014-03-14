@@ -23,7 +23,6 @@ class Order(models.Model):
     prepare_order_request = JSONField()
     prepare_order_response = JSONField()
 
-    read_order_request = JSONField()
     read_order_response = JSONField()
 
     @classmethod
@@ -39,7 +38,7 @@ class Order(models.Model):
         assert 'OrderDatum' in order_data
         assert 'VerzendDatum' in order_data
 
-        # Prepare order
+        # Call API
         response = postnl_client.prepare_order(**kwargs)
         response_dict = sudsobject_to_dict(response)
 
@@ -61,3 +60,26 @@ class Order(models.Model):
         order.save()
 
         return order
+
+    def read_order(self):
+        """ Call ReadOrder and store results. """
+        assert self.order_token
+
+        # Prepare arguments
+        kwargs = {
+            'Checkout': {
+                'OrderToken': self.order_token
+            }
+        }
+
+        # Call API
+        response = postnl_client.read_order(**kwargs)
+        response_dict = sudsobject_to_dict(response)
+
+        # Store response
+        self.read_order_response = response_dict
+        self.clean()
+        self.save()
+
+        # Return updated instance
+        return self

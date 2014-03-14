@@ -36,6 +36,7 @@ class OrderTests(PostNLTestMixin, TestCase):
     def test_prepare_order(self):
         """ Test prepare_order class method. """
 
+        # Setup mock response
         def response(url, request):
             self.assertXMLEqual(
                 request.body, self.read_file('prepare_order_request.xml')
@@ -126,5 +127,143 @@ class OrderTests(PostNLTestMixin, TestCase):
             },
             'Webshop': {
                 'IntRef': 'a0713e4083a049a996c302f48bb3f535'
+            }
+        })
+
+    def test_read_order(self):
+        """ Test read_order method. """
+
+        # Setup mock response
+        def response(url, request):
+            self.assertXMLEqual(
+                request.body, self.read_file('read_order_request.xml')
+            )
+
+            return self.read_file('read_order_response.xml')
+
+        instance = G(
+            Order,
+            order_token='0cfb4be2-47cf-4eac-865c-d66657953d5c'
+        )
+
+        # Read order data
+        with HTTMock(response):
+            new_instance = instance.read_order()
+
+        response_data = new_instance.read_order_response
+
+        self.assertTrue(response_data)
+
+        self.assertEquals(response_data, {
+            'Voorkeuren': {
+                'Bezorging': {
+                    'Tijdvak': {
+                        'Start': '10:30',
+                        'Eind': '08:30'
+                    },
+                    'Datum': '26-4-2012 00:00:00'
+                }
+            },
+            'Consument': {
+                'GeboorteDatum': '15-06-1977 00:00:00',
+                'ExtRef': 'jjansen',
+                'TelefoonNummer': '06-12345678',
+                'Email': 'j.jansen@e-id.nl'
+            },
+            'Facturatie': {
+                'Adres': {
+                    'Huisnummer': '1',
+                    'Initialen': 'J',
+                    'Geslacht': 'Meneer',
+                    'Deurcode': None,
+                    'Gebruik': 'P',
+                    'Gebouw': None,
+                    'Verdieping': None,
+                    'Achternaam': 'Jansen',
+                    'Afdeling': None,
+                    'Regio': None,
+                    'Land': 'NL',
+                    'Wijk': None,
+                    'Postcode': '4131LV',
+                    'Straat':
+                    'Lage Biezenweg',
+                    'Bedrijf': None,
+                    'Plaats': 'Vianen',
+                    'Tussenvoegsel': None,
+                    'Voornaam': 'Jan',
+                    'HuisnummerExt': None
+                }
+            },
+            'Webshop': {
+                'IntRef': 'a0713e4083a049a996c302f48bb3f535'
+            },
+            'CommunicatieOpties': {
+                'ReadOrderResponseCommunicatieOptie': [
+                    {
+                        'Text': 'Do not deliver to neighbours',
+                        'Code': 'REMARK'
+                    }
+                ]
+            },
+            'Bezorging': {
+                'ServicePunt': {
+                    'Huisnummer': None,
+                    'Initialen': None,
+                    'Geslacht': None,
+                    'Deurcode': None,
+                    'Gebruik': None,
+                    'Gebouw': None,
+                    'Verdieping': None,
+                    'Achternaam': None,
+                    'Afdeling': None,
+                    'Regio': None,
+                    'Land': None,
+                    'Wijk': None,
+                    'Postcode': None,
+                    'Straat': None,
+                    'Bedrijf': None,
+                    'Plaats': None,
+                    'Tussenvoegsel': None,
+                    'Voornaam': None,
+                    'HuisnummerExt': None
+                },
+                'Geadresseerde': {
+                    'Huisnummer': '1',
+                    'Initialen': 'J',
+                    'Geslacht': 'Meneer',
+                    'Deurcode': None,
+                    'Gebruik': 'Z',
+                    'Gebouw': None,
+                    'Verdieping': None,
+                    'Achternaam': 'Janssen',
+                    'Afdeling': None,
+                    'Regio': None,
+                    'Land': 'NL',
+                    'Wijk': None,
+                    'Postcode': '4131LV',
+                    'Straat': 'Lage Biezenweg ',
+                    'Bedrijf': 'E-ID',
+                    'Plaats': 'Vianen',
+                    'Tussenvoegsel': None,
+                    'Voornaam': 'Jan',
+                    'HuisnummerExt': None
+                }
+            },
+            'Opties': {
+                'ReadOrderResponseOpties': [
+                    {
+                        'Text': 'Congratulat ions with your new foobar!',
+                        'Code': 'CARD',
+                        'Prijs': '2.00'
+                    }
+                ]
+            },
+            'Order': {
+                'ExtRef': '15200_001'
+            },
+            'BetaalMethode': {
+                'Optie': '0021',
+                'Code': 'IDEAL',
+                'Prijs': '0.00'
             }
         })
