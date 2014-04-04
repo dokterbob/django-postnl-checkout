@@ -9,7 +9,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.auth',
     'django_nose',
-    'postnl_checkout.contrib.django'
+    'postnl_checkout.contrib.django_postnl_checkout'
 ]
 
 SITE_ID = 1

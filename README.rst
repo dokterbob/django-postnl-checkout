@@ -39,7 +39,7 @@ Django
 Installation
 ************
 1. `pip install -e git+https://github.com/dokterbob/python-postnl-checkout.git#egg=python-postnl-checkout`
-2. Add `postnl_checkout.contrib.postnl_checkout_django` to `INSTALLED_APPS`.
+2. Add `postnl_checkout.contrib.django_postnl_checkout` to `INSTALLED_APPS`.
 3. Setup required settings `POSTNL_CHECKOUT_USERNAME`, `POSTNL_CHECKOUT_PASSWORD` and `POSTNL_CHECKOUT_WEBSHOP_ID` settings.
 
 Settings
