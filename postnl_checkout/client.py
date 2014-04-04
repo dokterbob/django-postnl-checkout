@@ -7,8 +7,6 @@ import datetime
 import requests
 
 import suds
-import suds.client
-import suds.wsse
 
 import suds_requests
 
