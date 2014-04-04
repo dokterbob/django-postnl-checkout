@@ -4,7 +4,7 @@ from jsonfield import JSONField
 
 from postnl_checkout.exceptions import PostNLResponseException
 
-from .utils import get_client, sudsobject_to_dict
+from .utils import get_client
 
 # Instantiate a client
 postnl_client = get_client()
@@ -44,19 +44,18 @@ class Order(models.Model):
 
         # Call API
         response = postnl_client.prepare_order(**kwargs)
-        response_dict = sudsobject_to_dict(response)
 
-        assert 'Checkout' in response_dict
-        assert 'OrderToken' in response_dict['Checkout']
-        order_token = response_dict['Checkout']['OrderToken']
+        assert 'Checkout' in response
+        assert 'OrderToken' in response['Checkout']
+        order_token = response['Checkout']['OrderToken']
 
         # Store data
         order = cls(
             order_token=order_token,
             order_ext_ref=order_data['ExtRef'],
-            order_date=postnl_client.parse_datetime(order_data['OrderDatum']),
+            order_date=order_data['OrderDatum'],
             prepare_order_request=kwargs,
-            prepare_order_response=response_dict
+            prepare_order_response=response
         )
 
         # Validate and save
@@ -78,10 +77,9 @@ class Order(models.Model):
 
         # Call API
         response = postnl_client.read_order(**kwargs)
-        response_dict = sudsobject_to_dict(response)
 
         # Store response
-        self.read_order_response = response_dict
+        self.read_order_response = response
         self.clean()
         self.save()
 

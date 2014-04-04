@@ -3,6 +3,7 @@ logger = logging.getLogger(__name__)
 
 import hashlib
 import datetime
+import decimal
 
 import requests
 
@@ -11,6 +12,7 @@ import suds
 import suds_requests
 
 from .exceptions import PostNLRequestException, PostNLResponseException
+from .utils import contains_any
 
 
 class PostNLCheckoutClient(object):
@@ -31,7 +33,13 @@ class PostNLCheckoutClient(object):
         'WebshopCheckoutWebService/2_2/WebshopCheckoutService.svc?wsdl'
     )
 
+    # PostNL date/time format
     datetime_format = '%d-%m-%Y %H:%M:%S'
+
+    # Monetary fields to convert
+    monetary_fields = (
+        'Prijs', 'Kosten', 'Subtotaal', 'Verzendkosten', 'PaymentTotal'
+    )
 
     def __init__(
         self, username, password, webshop_id, environment,
@@ -96,13 +104,13 @@ class PostNLCheckoutClient(object):
         return client
 
     @classmethod
-    def parse_datetime(cls, value):
+    def _parse_datetime(cls, value):
         """ Parse datetime in PostNL format. """
 
         return datetime.datetime.strptime(value, cls.datetime_format)
 
     @classmethod
-    def format_datetime(cls, value):
+    def _format_datetime(cls, value):
         """ Format datetime in PostNL format. """
 
         return datetime.datetime.strftime(value, cls.datetime_format)
@@ -113,6 +121,92 @@ class PostNLCheckoutClient(object):
 
         for key in required:
             assert key in kwargs, 'Required argument %s not present.' % key
+
+    @classmethod
+    def _sudsobject_to_dict(cls, obj, wrapper=None, key=''):
+        """
+        Recursively convert a (suds) dict-ish object to a dictionary,
+        optionally mapping values through the wrapper function.
+
+        Inspired by: http://www.snip2code.com/Snippet/15899/convert-suds-response-to-dictionary
+        """
+        if not wrapper:
+            # Default wrapper to a no-op
+            # Note: this is not a great idea performance-wise
+            wrapper = lambda k, v: v
+
+        if hasattr(obj, 'items'):
+            # Dictionary
+            iterator = obj.items()
+        elif hasattr(obj, '__keylist__'):
+            # Suds object
+            iterator = obj
+        else:
+            # Object is not dictionary-like, return wrapped value
+            return wrapper(key, obj)
+
+        # Object is dictionary-like, potentially recurse
+
+        out = {}
+        for key, value in iterator:
+            if isinstance(value, list):
+                # Value is list
+                out[key] = []
+                for item in value:
+                    out[key].append(
+                        cls._sudsobject_to_dict(item, wrapper, key)
+                    )
+            else:
+                # Attempt recursion
+                out[key] = cls._sudsobject_to_dict(value, wrapper, key)
+
+        return out
+
+    @classmethod
+    def _from_python(cls, obj):
+        """ Convert object from Pythonic format to API format. """
+
+        def wrapper(key, value):
+            """ Wrapper used to convert values. """
+            # Convert dates
+            if 'Datum' in key:
+                return unicode(cls._format_datetime(value))
+
+            # Leave None in place
+            if value is None:
+                return None
+
+            # Default; convert to strings
+            return unicode(value)
+
+        obj = cls._sudsobject_to_dict(obj, wrapper)
+
+        return obj
+
+    @classmethod
+    def _to_python(cls, obj):
+        """ Convert object from API format to Pythonic format. """
+
+        def wrapper(key, value):
+            """ Wrapper used to convert values. """
+            # Convert dates
+            if 'Datum' in key:
+                return cls._parse_datetime(value)
+
+            # Convert monetary amounts to Decimal
+            if contains_any(key, cls.monetary_fields):
+                return decimal.Decimal(value)
+
+            # Leave None in place
+            if value is None:
+                return None
+
+            # Return string version of value
+            return unicode(value)
+
+        obj = cls._sudsobject_to_dict(obj, wrapper)
+
+        return obj
 
     def _add_webshop(self, kwargs):
         """ Add webshop to argument dictionary. """
@@ -125,10 +219,16 @@ class PostNLCheckoutClient(object):
     def _api_call(self, method_name, **kwargs):
         """ Wrapper for API calls. """
 
+        # Get relevant method
         method = getattr(self.service, method_name)
 
+        # Convert arguments from Pythonic formats
+        kwargs = self._from_python(kwargs)
+
         try:
-            return method(**kwargs)
+            # Perform API call
+            result = method(**kwargs)
+
         except suds.WebFault, e:
             # Catch CIF Exception details and re-raise
 
@@ -139,6 +239,11 @@ class PostNLCheckoutClient(object):
             errors = ' '.join([error.ErrorMsg for error in errors])
 
             raise PostNLRequestException(errors)
+
+        # Convert result to Pythonic formats
+        result = self._to_python(result)
+
+        return result
 
     def prepare_order(self, **kwargs):
         """ Wrapper around PrepareOrder API call. """

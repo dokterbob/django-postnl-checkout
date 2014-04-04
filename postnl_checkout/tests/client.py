@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import unittest
 
 from httmock import HTTMock
@@ -44,8 +45,8 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
         """ Assert webshop and id in result. """
 
         self.assertIn('Webshop', result)
-        self.assertIn('IntRef', result.Webshop)
-        self.assertEquals(result.Webshop.IntRef, self.intref)
+        self.assertIn('IntRef', result['Webshop'])
+        self.assertEquals(result['Webshop']['IntRef'], self.intref)
 
     def test_client(self):
         """ Test instantiated client """
@@ -78,9 +79,24 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
             'Webshop': {'IntRef': self.intref}
         }, kwargs)
 
+    def test_sudsobject_to_dict(self):
+        """ Test _sudsobject_to_dict(obj, wrapper). """
+
+        # Trivial test; input should be output
+        data = {
+            'Order': {
+                'ExtRef': '1105_900',
+            },
+            'ListTest': [1, 2, 3]
+        }
+
+        output = self.client._sudsobject_to_dict(data)
+
+        self.assertEquals(output, data)
+
     def test_parse_datetime(self):
-        """ TEst parsing datetimes """
-        output = self.client.parse_datetime('15-06-1977 00:00:00')
+        """ Test parsing datetimes """
+        output = self.client._parse_datetime('15-06-1977 00:00:00')
 
         self.assertEquals(
             output,
@@ -91,18 +107,69 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
         )
 
     def test_format_datetime(self):
-        """ TEst parsing datetimes """
-        output = self.client.format_datetime(
-            datetime.datetime(
-                year=1977, month=6, day=15,
-                hour=0, minute=0, second=0
-            )
+        """ Test parsing datetimes """
+        test_date = datetime.datetime(
+            year=1977, month=6, day=15,
+            hour=0, minute=0, second=0
         )
 
-        self.assertEquals(
-            output,
-            '15-06-1977 00:00:00'
-        )
+        output = self.client._format_datetime(test_date)
+
+        self.assertEquals(output, '15-06-1977 00:00:00')
+
+        # Attempt parse
+        output = self.client._parse_datetime(output)
+
+        # Output should be equal to original
+        self.assertEquals(output, test_date)
+
+    def test_from_python(self):
+        """ Test _from_python(); Python to PostNL conversion """
+
+        data = {
+            'Order': {
+                'ExtRef': '1105_900',
+                'VerzendDatum': datetime.datetime(
+                    year=1977, month=6, day=15,
+                    hour=0, minute=0, second=0
+                ),
+                'Subtotaal': decimal.Decimal('5.00')
+            },
+        }
+
+        output = self.client._from_python(data)
+
+        self.assertEquals(output, {
+            'Order': {
+                'ExtRef': u'1105_900',
+                'VerzendDatum': u'15-06-1977 00:00:00',
+                'Subtotaal': u'5.00'
+            },
+        })
+
+    def test_to_python(self):
+        """ Test _to_python(); PostNL to Python conversion. """
+
+        data = {
+            'Order': {
+                'ExtRef': u'1105_900',
+                'VerzendDatum': u'15-06-1977 00:00:00',
+                'Subtotaal': u'5.00'
+            }
+        }
+
+        output = self.client._to_python(data)
+
+        self.assertEquals(output, {
+            'Order': {
+                'ExtRef': u'1105_900',
+                'VerzendDatum': datetime.datetime(
+                    year=1977, month=6, day=15,
+                    hour=0, minute=0, second=0
+                ),
+                'Subtotaal': decimal.Decimal('5.00')
+            }
+        })
 
     def test_prepare_order(self):
         """ Test PrepareOrder """
@@ -150,18 +217,14 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
             },
             'Order': {
                 'ExtRef': '1105_900',
-                'OrderDatum': self.client.format_datetime(
-                    datetime.datetime(
-                        year=2011, month=7, day=21,
-                        hour=20, minute=11, second=0
-                    )
+                'OrderDatum': datetime.datetime(
+                    year=2011, month=7, day=21,
+                    hour=20, minute=11, second=0
                 ),
                 'Subtotaal': '125.00',
-                'VerzendDatum': self.client.format_datetime(
-                    datetime.datetime(
-                        year=2011, month=7, day=22,
-                        hour=20, minute=11, second=0
-                    )
+                'VerzendDatum': datetime.datetime(
+                    year=2011, month=7, day=22,
+                    hour=20, minute=11, second=0
                 ),
                 'VerzendKosten': '12.50'
             },
@@ -183,10 +246,10 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
         # Assert checkout
         self.assertIn('Checkout', result)
 
-        checkout = result.Checkout
+        checkout = result['Checkout']
         self.assertIn('OrderToken', checkout)
         self.assertEquals(
-            checkout.OrderToken, '0cfb4be2-47cf-4eac-865c-d66657953d5c'
+            checkout['OrderToken'], '0cfb4be2-47cf-4eac-865c-d66657953d5c'
         )
 
         self.assertWebshop(result)
@@ -229,7 +292,7 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
 
         # Attempt parsing datetime
         self.assertEquals(
-            self.client.parse_datetime(voorkeuren['Bezorging']['Datum']),
+            voorkeuren['Bezorging']['Datum'],
             datetime.datetime(
                 year=2012, month=4, day=26,
                 hour=0, minute=0, second=0
@@ -268,7 +331,7 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
 
         # Assert presence of top level elements
         self.assertIn('Order', result)
-        order = result.Order
+        order = result['Order']
         self.assertIn('ExtRef', order)
 
     def test_update_order(self):

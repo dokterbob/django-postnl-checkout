@@ -127,25 +127,3 @@ def get_client():
     )
 
     return client
-
-
-def sudsobject_to_dict(obj):
-    """
-    Recursively convert a suds object to a dictionary.
-
-    Inspired by: http://www.snip2code.com/Snippet/15899/convert-suds-response-to-dictionary
-    """
-    out = {}
-    for key, value in obj:
-        if hasattr(value, '__keylist__'):
-            out[key] = sudsobject_to_dict(value)
-        elif isinstance(value, list):
-            out[key] = []
-            for item in value:
-                if hasattr(item, '__keylist__'):
-                    out[key].append(sudsobject_to_dict(item))
-                else:
-                    out[key].append(item)
-        else:
-            out[key] = value
-    return out

@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 from django.test import TestCase
 
@@ -8,11 +9,12 @@ from django_dynamic_fixture import G, N
 
 from postnl_checkout.tests.base import PostNLTestMixin
 
-from ..models import Order, postnl_client
+from ..models import Order
 
 
 class OrderTests(PostNLTestMixin, TestCase):
     """ Tests for Order model. """
+    maxDiff = None
 
     def setUp(self):
         super(OrderTests, self).setUp()
@@ -80,11 +82,9 @@ class OrderTests(PostNLTestMixin, TestCase):
             },
             'Order': {
                 'ExtRef': '1105_900',
-                'OrderDatum': postnl_client.format_datetime(self.order_datum),
+                'OrderDatum': self.order_datum,
                 'Subtotaal': '125.00',
-                'VerzendDatum': postnl_client.format_datetime(
-                    self.verzend_datum
-                ),
+                'VerzendDatum': self.verzend_datum,
                 'VerzendKosten': '12.50'
             },
             'Retour': {
@@ -158,50 +158,49 @@ class OrderTests(PostNLTestMixin, TestCase):
             'Voorkeuren': {
                 'Bezorging': {
                     'Tijdvak': {
-                        'Start': '10:30',
-                        'Eind': '08:30'
+                        'Start': u'10:30',
+                        'Eind': u'08:30'
                     },
-                    'Datum': '26-4-2012 00:00:00'
+                    'Datum': datetime.datetime(2012, 4, 26, 0, 0)
                 }
             },
             'Consument': {
-                'GeboorteDatum': '15-06-1977 00:00:00',
-                'ExtRef': 'jjansen',
-                'TelefoonNummer': '06-12345678',
-                'Email': 'j.jansen@e-id.nl'
+                'GeboorteDatum': datetime.datetime(1977, 6, 15, 0, 0),
+                'ExtRef': u'jjansen',
+                'TelefoonNummer': u'06-12345678',
+                'Email': u'j.jansen@e-id.nl'
             },
             'Facturatie': {
                 'Adres': {
-                    'Huisnummer': '1',
-                    'Initialen': 'J',
-                    'Geslacht': 'Meneer',
+                    'Huisnummer': u'1',
+                    'Initialen': u'J',
+                    'Geslacht': u'Meneer',
                     'Deurcode': None,
-                    'Gebruik': 'P',
+                    'Gebruik': u'P',
                     'Gebouw': None,
                     'Verdieping': None,
-                    'Achternaam': 'Jansen',
+                    'Achternaam': u'Jansen',
                     'Afdeling': None,
                     'Regio': None,
-                    'Land': 'NL',
+                    'Land': u'NL',
                     'Wijk': None,
-                    'Postcode': '4131LV',
-                    'Straat':
-                    'Lage Biezenweg',
+                    'Postcode': u'4131LV',
+                    'Straat': 'Lage Biezenweg',
                     'Bedrijf': None,
-                    'Plaats': 'Vianen',
+                    'Plaats': u'Vianen',
                     'Tussenvoegsel': None,
-                    'Voornaam': 'Jan',
+                    'Voornaam': u'Jan',
                     'HuisnummerExt': None
                 }
             },
             'Webshop': {
-                'IntRef': 'a0713e4083a049a996c302f48bb3f535'
+                'IntRef': u'a0713e4083a049a996c302f48bb3f535'
             },
             'CommunicatieOpties': {
                 'ReadOrderResponseCommunicatieOptie': [
                     {
-                        'Text': 'Do not deliver to neighbours',
-                        'Code': 'REMARK'
+                        'Text': u'Do not deliver to neighbours',
+                        'Code': u'REMARK'
                     }
                 ]
             },
@@ -228,43 +227,43 @@ class OrderTests(PostNLTestMixin, TestCase):
                     'HuisnummerExt': None
                 },
                 'Geadresseerde': {
-                    'Huisnummer': '1',
-                    'Initialen': 'J',
-                    'Geslacht': 'Meneer',
+                    'Huisnummer': u'1',
+                    'Initialen': u'J',
+                    'Geslacht': u'Meneer',
                     'Deurcode': None,
-                    'Gebruik': 'Z',
+                    'Gebruik': u'Z',
                     'Gebouw': None,
                     'Verdieping': None,
-                    'Achternaam': 'Janssen',
+                    'Achternaam': u'Janssen',
                     'Afdeling': None,
                     'Regio': None,
-                    'Land': 'NL',
+                    'Land': u'NL',
                     'Wijk': None,
-                    'Postcode': '4131LV',
-                    'Straat': 'Lage Biezenweg ',
-                    'Bedrijf': 'E-ID',
-                    'Plaats': 'Vianen',
+                    'Postcode': u'4131LV',
+                    'Straat': u'Lage Biezenweg ',
+                    'Bedrijf': u'E-ID',
+                    'Plaats': u'Vianen',
                     'Tussenvoegsel': None,
-                    'Voornaam': 'Jan',
+                    'Voornaam': u'Jan',
                     'HuisnummerExt': None
                 }
             },
             'Opties': {
                 'ReadOrderResponseOpties': [
                     {
-                        'Text': 'Congratulat ions with your new foobar!',
-                        'Code': 'CARD',
-                        'Prijs': '2.00'
+                        'Text': u'Congratulat ions with your new foobar!',
+                        'Code': u'CARD',
+                        'Prijs': decimal.Decimal('2.00')
                     }
                 ]
             },
             'Order': {
-                'ExtRef': '15200_001'
+                'ExtRef': u'15200_001'
             },
             'BetaalMethode': {
-                'Optie': '0021',
-                'Code': 'IDEAL',
-                'Prijs': '0.00'
+                'Optie': u'0021',
+                'Code': u'IDEAL',
+                'Prijs': decimal.Decimal('0.00')
             }
         })
 
@@ -280,7 +279,7 @@ class OrderTests(PostNLTestMixin, TestCase):
 
         kwargs = {
             'Order': {
-                'PaymentTotal': '183.25'
+                'PaymentTotal': decimal.Decimal('183.25')
             }
         }
 
