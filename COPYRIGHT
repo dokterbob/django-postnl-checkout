@@ -1,4 +1,4 @@
-django-postnl-checkout: PostNL checkout support for Django.
+python-postnl-checkout: PostNL checkout support for Django.
 Copyright (C) 2014 Mathijs de Bruin
 
 This program is free software: you can redistribute it and/or modify
