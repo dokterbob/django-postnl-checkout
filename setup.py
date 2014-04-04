@@ -40,7 +40,7 @@ setup(
     description='PostNL checkout support for Django.',
     long_description=README,
     install_requires=REQUIREMENTS,
-    extras_require = {
+    extras_require={
         'Django': DJANGO_REQUIREMENTS
     },
     license='AGPL',
