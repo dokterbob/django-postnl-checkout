@@ -1,4 +1,3 @@
-======================
 django-postnl-checkout
 ======================
 
@@ -18,28 +17,31 @@ django-postnl-checkout
 .. image:: https://pypip.in/d/django-postnl-checkout/badge.png
     :target: https://crate.io/packages/django-postnl-checkout?version=latest
 
-PostNL checkout support for Python and Django.
------------------------------------------------------
-
 What is it?
-===========
-TO BE DONE
+------------
+PostNL checkout support for Python and Django.
 
 Status
-======
+------
 Early alpha. Don't use it, unless you're willing to fix issues.
 
 Compatibility
-=============
+-------------
 Tested to work with Django 1.4, 1.5 and 1.6 and Python 2.7.
 
 Requirements
-============
+-------------
 Please refer to `requirements.txt <http://github.com/dokterbob/django-postnl-checkout/blob/master/requirements.txt>`_
 for an updated list of required packages.
 
 Django
-======
+------
+
+Installation
+************
+1. `pip install -e git+https://github.com/dokterbob/django-postnl-checkout.git#egg=django-postnl-checkout`
+2. Add `postnl_checkout.contrib.postnl_checkout_django` to `INSTALLED_APPS`.
+3. Setup required settings `POSTNL_CHECKOUT_USERNAME`, `POSTNL_CHECKOUT_PASSWORD` and `POSTNL_CHECKOUT_WEBSHOP_ID` settings.
 
 Settings
 ********
