@@ -6,12 +6,13 @@ import datetime
 
 import requests
 
+import suds
 import suds.client
 import suds.wsse
 
 import suds_requests
 
-from .exceptions import PostNLResponseException
+from .exceptions import PostNLRequestException, PostNLResponseException
 
 
 class PostNLCheckoutClient(object):
@@ -123,6 +124,24 @@ class PostNLCheckoutClient(object):
             'IntRef': self.webshop_id
         }
 
+    def _api_call(self, method_name, **kwargs):
+        """ Wrapper for API calls. """
+
+        method = getattr(self.service, method_name)
+
+        try:
+            return method(**kwargs)
+        except suds.WebFault, e:
+            # Catch CIF Exception details and re-raise
+
+            # Get errors object
+            errors = e.fault.detail.CifException.Errors.ExceptionData
+
+            # Stringify and concatenate errors
+            errors = ' '.join([error.ErrorMsg for error in errors])
+
+            raise PostNLRequestException(errors)
+
     def prepare_order(self, **kwargs):
         """ Wrapper around PrepareOrder API call. """
 
@@ -135,10 +154,7 @@ class PostNLCheckoutClient(object):
             )
 
         # Execute API call
-        result = self.service.PrepareOrder(**kwargs)
-
-        # Return the result
-        return result
+        return self._api_call('PrepareOrder', **kwargs)
 
     def read_order(self, **kwargs):
         """ Wrapper around ReadOrder API call. """
@@ -152,10 +168,7 @@ class PostNLCheckoutClient(object):
             )
 
         # Execute API call
-        result = self.service.ReadOrder(**kwargs)
-
-        # Return the result
-        return result
+        return self._api_call('ReadOrder', **kwargs)
 
     def confirm_order(self, **kwargs):
         """ Wrapper around ConfirmOrder API call. """
@@ -169,7 +182,7 @@ class PostNLCheckoutClient(object):
             )
 
         # Execute API call
-        result = self.service.ConfirmOrder(**kwargs)
+        result = self._api_call('ConfirmOrder', **kwargs)
 
         # Make sure the response is sensible
         if not 'Order' in result and 'ExtRef' in result['Order']:
@@ -190,7 +203,7 @@ class PostNLCheckoutClient(object):
             )
 
         # Execute API call
-        result = self.service.UpdateOrder(**kwargs)
+        result = self._api_call('UpdateOrder', **kwargs)
 
         # Return the result
         assert result in ('true', 'false')
@@ -204,7 +217,8 @@ class PostNLCheckoutClient(object):
         Returns True if service OK, False for not OK.
         """
 
-        result = self.service.PingStatus()
+        # Execute API call
+        result = self._api_call('PingStatus')
 
         assert result in ('OK', 'NOK')
 
