@@ -38,7 +38,7 @@ class PostNLCheckoutClient(object):
 
     # Monetary fields to convert
     monetary_fields = (
-        'Prijs', 'Kosten', 'Subtotaal', 'Verzendkosten', 'PaymentTotal'
+        'Prijs', 'Kosten', 'Subtotaal', 'VerzendKosten', 'PaymentTotal'
     )
 
     def __init__(
