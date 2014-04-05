@@ -40,7 +40,6 @@ class Order(models.Model):
 
         assert 'ExtRef' in order_data
         assert 'OrderDatum' in order_data
-        assert 'VerzendDatum' in order_data
 
         # Call API
         response = postnl_client.prepare_order(**kwargs)
