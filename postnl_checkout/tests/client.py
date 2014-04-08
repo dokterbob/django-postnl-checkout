@@ -409,3 +409,41 @@ class ClientTests(PostNLTestMixin, unittest.TestCase):
 
         with HTTMock(nok_response):
             self.assertEquals(self.client.ping_status(), False)
+
+
+class ClientRegressionTests(ClientTests):
+    """ Regression tests. """
+
+    def test_from_python_none_date(self):
+        """ Regression test for None dates in _from_python. """
+
+        data = {
+            'Order': {
+                'VerzendDatum': None,
+            },
+        }
+
+        output = self.client._from_python(data)
+
+        self.assertEquals(output, {
+            'Order': {
+                'VerzendDatum': None,
+            },
+        })
+
+    def test_to_python_none_date(self):
+        """ Regression test for None dates in _to_python. """
+
+        data = {
+            'Order': {
+                'VerzendDatum': None,
+            }
+        }
+
+        output = self.client._to_python(data)
+
+        self.assertEquals(output, {
+            'Order': {
+                'VerzendDatum': None
+            }
+        })

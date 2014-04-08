@@ -1,1 +1,1 @@
-from .client import ClientTests
+from .client import ClientTests, ClientRegressionTests

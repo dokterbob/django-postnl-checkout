@@ -168,13 +168,13 @@ class PostNLCheckoutClient(object):
 
         def wrapper(key, value):
             """ Wrapper used to convert values. """
-            # Convert dates
-            if 'Datum' in key:
-                return unicode(cls._format_datetime(value))
-
             # Leave None in place
             if value is None:
                 return None
+
+            # Convert dates
+            if 'Datum' in key:
+                return unicode(cls._format_datetime(value))
 
             # Default; convert to strings
             return unicode(value)
@@ -189,6 +189,11 @@ class PostNLCheckoutClient(object):
 
         def wrapper(key, value):
             """ Wrapper used to convert values. """
+
+            # Leave None in place
+            if value is None:
+                return None
+
             # Convert dates
             if 'Datum' in key:
                 return cls._parse_datetime(value)
@@ -196,10 +201,6 @@ class PostNLCheckoutClient(object):
             # Convert monetary amounts to Decimal
             if contains_any(key, cls.monetary_fields):
                 return decimal.Decimal(value)
-
-            # Leave None in place
-            if value is None:
-                return None
 
             # Return string version of value
             return unicode(value)
