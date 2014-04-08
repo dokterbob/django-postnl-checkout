@@ -1,5 +1,6 @@
 """ Common helpers. """
 
+
 def contains_any(key, values):
     """ Returns True if any of values is in key. """
 
