@@ -1,9 +1,11 @@
 from django.db import models
+from django.core.cache import cache
 
 from jsonfield import JSONField
 
 from postnl_checkout.exceptions import PostNLResponseException
 
+from .settings import postnl_checkout_settings as settings
 from .utils import get_client
 
 # Instantiate a client
@@ -67,7 +69,20 @@ class Order(models.Model):
     def ping_status(cls):
         """ Wrap PingStatus for ease of accesibility. """
 
-        return postnl_client.ping_status()
+        if settings.SERVICE_STATUS_CACHE_TIMEOUT:
+            status = cache.get(settings.SERVICE_STATUS_CACHE_KEY, None)
+            if status is None:
+                status = postnl_client.ping_status()
+
+                cache.set(
+                    settings.SERVICE_STATUS_CACHE_KEY, status,
+                    settings.SERVICE_STATUS_CACHE_TIMEOUT
+                )
+        else:
+            # No timeout, don't cache
+            status = postnl_client.ping_status()
+
+        return status
 
     def read_order(self):
         """ Call ReadOrder and store results. """

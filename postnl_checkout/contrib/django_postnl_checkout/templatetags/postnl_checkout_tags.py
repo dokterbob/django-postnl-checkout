@@ -21,7 +21,6 @@ def get_postnl_checkout(context):
     button_base = 'https://checkout.postnl.nl/checkoutbutton/'
     checkout_js = 'Checkout2/Scripts/Checkout.js'
 
-    # TODO: cache this
     service_status = Order.ping_status()
     active = service_status and (get_language() == 'nl')
 
