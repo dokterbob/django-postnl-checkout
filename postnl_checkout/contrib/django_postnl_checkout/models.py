@@ -63,6 +63,12 @@ class Order(models.Model):
 
         return order
 
+    @classmethod
+    def ping_status(cls):
+        """ Wrap PingStatus for ease of accesibility. """
+
+        return postnl_client.ping_status()
+
     def read_order(self):
         """ Call ReadOrder and store results. """
         assert self.order_token
@@ -127,8 +133,3 @@ class Order(models.Model):
 
         # Return updated instance
         return self
-
-    def ping_status(self):
-        """ Wrap PingStatus for ease of accesibility. """
-
-        return postnl_client.ping_status()
