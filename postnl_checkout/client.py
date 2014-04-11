@@ -233,13 +233,9 @@ class PostNLCheckoutClient(object):
         except suds.WebFault, e:
             # Catch CIF Exception details and re-raise
 
-            # Get errors object
-            errors = e.fault.detail.CifException.Errors.ExceptionData
-
-            # Stringify and concatenate errors
-            errors = ' '.join([error.ErrorMsg for error in errors])
-
-            raise PostNLRequestException(errors)
+            # Get error message
+            error = e.fault.detail.CifException.Errors.ExceptionData.ErrorMsg
+            raise PostNLRequestException(error)
 
         # Convert result to Pythonic formats
         result = self._to_python(result)
