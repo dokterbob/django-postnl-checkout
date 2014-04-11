@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 from django.test import TestCase
+from django.core.cache import cache
 
 from httmock import HTTMock
 
@@ -383,12 +384,17 @@ class OrderTests(PostNLTestMixin, TestCase):
 
         instance = G(Order)
 
+        self.response_called = 0
+
         def ok_response(url, request):
             # Assert
             self.assertXMLEqual(
                 request.body,
                 self.read_file('ping_status_request.xml')
             )
+
+            self.response_called += 1
+
             return self.read_file('ping_status_response_ok.xml')
 
         def nok_response(url, request):
@@ -396,6 +402,17 @@ class OrderTests(PostNLTestMixin, TestCase):
 
         with HTTMock(ok_response):
             self.assertEquals(instance.ping_status(), True)
+
+        self.assertEquals(self.response_called, 1)
+
+        # Repeated call should not cause the response to be called
+        with HTTMock(ok_response):
+            self.assertEquals(instance.ping_status(), True)
+
+        self.assertEquals(self.response_called, 1)
+
+        # Clear cache
+        cache.clear()
 
         with HTTMock(nok_response):
             self.assertEquals(instance.ping_status(), False)
