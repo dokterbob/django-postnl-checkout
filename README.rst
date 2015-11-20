@@ -14,20 +14,17 @@ python-postnl-checkout
 .. image:: https://badge.fury.io/py/python-postnl-checkout.png
     :target: http://badge.fury.io/py/python-postnl-checkout
 
-.. image:: https://pypip.in/d/python-postnl-checkout/badge.png
-    :target: https://crate.io/packages/python-postnl-checkout?version=latest
-
 What is it?
 ------------
 PostNL checkout support for Python and Django.
 
 Status
 ------
-Early alpha. Don't use it, unless you're willing to fix issues.
+Stable and being used in production.
 
 Compatibility
 -------------
-Tested to work with Django 1.4, 1.5 and 1.6 and Python 2.7.
+Tested to work with Django 1.7 and 1.8 and Python 2.7.
 
 Requirements
 -------------
