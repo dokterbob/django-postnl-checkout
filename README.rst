@@ -24,7 +24,7 @@ Stable and being used in production.
 
 Compatibility
 -------------
-Tested to work with Django 1.7 and 1.8 and Python 2.7.
+Tested to work with Django 1.8 and 1.9 under Python 2.7.
 
 Requirements
 -------------
