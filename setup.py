@@ -49,7 +49,7 @@ except:
 
 setup(
     name='python-postnl-checkout',
-    version='1.0',
+    version='0.9',
     description='PostNL checkout support for Django.',
     long_description=README,
     install_requires=REQUIREMENTS,

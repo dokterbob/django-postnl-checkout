@@ -1,7 +1,7 @@
 Changes
 =======
 
-1.0 (6-5-2016)
+0.9 (6-5-2016)
 --------------
 - Support (only) Django 1.8 and 1.9.
 - Reorganize test infrastructure.
