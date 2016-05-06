@@ -1,12 +1,22 @@
+import json
+
 from django.db import models
 from django.core.cache import cache
 
 from jsonfield import JSONField
+from jsonfield.utils import default as encoder_default
 
 from postnl_checkout.exceptions import PostNLResponseException
 
 from .settings import postnl_checkout_settings as settings
 from .utils import get_client
+
+
+class PostNLJSONEncoder(json.JSONEncoder):
+    """ Encoder with default allowing encoding of datetime objects. """
+    def default(self, o):
+        return encoder_default(o)
+
 
 # Instantiate a client
 postnl_client = get_client()
@@ -24,12 +34,12 @@ class Order(models.Model):
     customer_ext_ref = models.CharField(db_index=True, max_length=255)
 
     # Raw data
-    prepare_order_request = JSONField()
-    prepare_order_response = JSONField()
+    prepare_order_request = JSONField(encoder_class=PostNLJSONEncoder)
+    prepare_order_response = JSONField(encoder_class=PostNLJSONEncoder)
 
-    read_order_response = JSONField()
+    read_order_response = JSONField(encoder_class=PostNLJSONEncoder)
 
-    update_order_request = JSONField()
+    update_order_request = JSONField(encoder_class=PostNLJSONEncoder)
 
     @classmethod
     def prepare_order(cls, **kwargs):
