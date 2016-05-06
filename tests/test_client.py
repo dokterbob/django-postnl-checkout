@@ -4,7 +4,7 @@ import unittest
 
 from httmock import HTTMock
 
-from ..client import PostNLCheckoutClient
+from postnl_checkout.client import PostNLCheckoutClient
 
 from .base import PostNLTestMixin
 

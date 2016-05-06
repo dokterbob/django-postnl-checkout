@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # This file is part of django-url-sso.
 #
-# django-url-sso: Generate login URL's for unstandardized SSO systems.
-# Copyright (C) 2014 Mathijs de Bruin
+# python-postnl-checkout: Generate login URL's for unstandardized SSO systems.
+# Copyright (C) 2015-2016 Mathijs de Bruin
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,26 +17,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import warnings
+
 from setuptools import setup, find_packages
 
 try:
-    README = open('README.rst').read()
+    README = open('README.rst').read() + '\n\n'
+    README += open('CHANGES.rst').read()
 except:
+    warnings.warn('Could not read README.rst and/or CHANGES.rst')
     README = None
 
 try:
     REQUIREMENTS = open('requirements.txt').read()
 except:
+    warnings.warn('Could not read requirements.txt')
     REQUIREMENTS = None
 
 try:
-    DJANGO_REQUIREMENTS = open('django_requirements.txt').read()
+    TEST_REQUIREMENTS = open('requirements_test.txt').read()
 except:
+    warnings.warn('Could not read requirements_test.txt')
+    TEST_REQUIREMENTS = None
+
+try:
+    DJANGO_REQUIREMENTS = open('requirements_django.txt').read()
+except:
+    warnings.warn('Could not read requirements_django.txt')
     DJANGO_REQUIREMENTS = None
+
 
 setup(
     name='python-postnl-checkout',
-    version='0.2',
+    version='1.0',
     description='PostNL checkout support for Django.',
     long_description=README,
     install_requires=REQUIREMENTS,
@@ -47,7 +60,7 @@ setup(
     author='Mathijs de Bruin',
     author_email='mathijs@mathijsfietst.nl',
     url='https://github.com/dokterbob/python-postnl-checkout/',
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests", "test_project")),
     include_package_data=True,
     classifiers=(
         'Development Status :: 4 - Beta',
@@ -58,5 +71,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Utilities'
-    )
+    ),
+    test_suite='runtests.run_tests',
+    tests_require=TEST_REQUIREMENTS + DJANGO_REQUIREMENTS
 )

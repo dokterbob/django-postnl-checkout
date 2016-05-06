@@ -8,9 +8,9 @@ from httmock import HTTMock
 
 from django_dynamic_fixture import G, N
 
-from postnl_checkout.tests.base import PostNLTestMixin
+from postnl_checkout.contrib.django_postnl_checkout.models import Order
 
-from ..models import Order
+from .base import PostNLTestMixin
 
 
 class OrderTests(PostNLTestMixin, TestCase):
