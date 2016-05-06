@@ -8,7 +8,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.auth',
-    'django_nose',
     'postnl_checkout.contrib.django_postnl_checkout'
 ]
 
@@ -24,15 +23,6 @@ SECRET_KEY = ''.join([
         'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     ) for i in range(50)
 ])
-
-# Use nose for tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Nose defaults
-NOSE_ARGS = [
-    '--detailed-errors', '--logging-level=INFO', '--with-yanc',
-    '--with-coverage', '--cover-package=postnl_checkout'
-]
 
 # Required for django-webtest to work
 STATIC_URL = '/static/'
