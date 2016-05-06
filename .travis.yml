@@ -28,9 +28,10 @@ install:
   - pip install -r requirements_django.txt
   - pip install -q $DJANGO
   - pip install -r requirements_test.txt
+  - pip install coveralls
 
 # command to run tests
-script: python setup.py test
+script: coverage run setup.py test
 
 # submit coverage reports
 after_success:

@@ -1,0 +1,6 @@
+[run]
+source = postnl_checkout
+branch = True
+
+[report]
+omit = postnl_checkout/django_postnl_checkout/migrations/*
