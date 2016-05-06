@@ -24,9 +24,10 @@ matrix:
 
 # command to install dependencies
 install:
-  - pip install -r django_requirements.txt
+  - pip install -r requirements.txt
+  - pip install -r requirements_django.txt
   - pip install -q $DJANGO
-  - pip install -r test_requirements.txt
+  - pip install -r requirements_test.txt
 
 # command to run tests
 script: python setup.py test
