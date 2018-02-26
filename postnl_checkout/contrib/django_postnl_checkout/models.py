@@ -2,6 +2,7 @@ import json
 
 from django.db import models
 from django.core.cache import cache
+from django.utils.functional import SimpleLazyObject
 
 from jsonfield import JSONField
 from jsonfield.utils import default as encoder_default
@@ -18,8 +19,8 @@ class PostNLJSONEncoder(json.JSONEncoder):
         return encoder_default(o)
 
 
-# Instantiate a client
-postnl_client = get_client()
+# Lazily instantiate a client (so we don't make a request on startup)
+postnl_client = SimpleLazyObject(get_client)
 
 
 class Order(models.Model):
